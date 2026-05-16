@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DHCP Simulation | Interactive Enterprise Network Protocol Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-page="dhcp">
+  <header class="site-header">
+    <div class="container header-content">
+      <div class="branding">
+        <h1>DHCP Protocol Simulation</h1>
+        <p>
+          Visualising DHCP lease allocation, the DORA message sequence, rogue DHCP attack behaviour,
+          Wireshark evidence, and practical reproduction guidance for the SIT716 HD Plus project.
+        </p>
+      </div>
+      <div class="header-badge">Protocol Page</div>
+    </div>
+  </header>
+
+  <nav class="site-nav">
+    <div class="container nav-content">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="arp.html" class="nav-link nav-arp">ARP</a>
+      <a href="dhcp.html" class="nav-link nav-dhcp active">DHCP</a>
+      <a href="dns.html" class="nav-link nav-dns">DNS</a>
+      <a href="index.html#ospf-future-work" class="nav-link nav-ospf">OSPF Future Work</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- DHCP HERO -->
+    <section class="protocol-hero-section dhcp-landing-section">
+      <div class="container container-wide">
+        <div class="dhcp-hero-grid">
+          <div class="panel dhcp-hero-content">
+            <p class="eyebrow-text">DHCP DORA + Rogue DHCP + Wireshark Evidence</p>
+            <h2>Dynamic Host Configuration Under Normal and Rogue Server Conditions</h2>
+
+            <p class="hero-lead">
+              Dynamic Host Configuration Protocol is used to automatically provide clients with
+              network settings such as IP address, subnet mask, default gateway, DNS server, and
+              lease duration. This page demonstrates the normal DHCP DORA sequence and shows how a
+              rogue DHCP server can abuse the same process by sending malicious or incorrect
+              configuration to a client.
+            </p>
+
+            <p>
+              The DHCP page connects the website simulation with practical Ubuntu MiniEdit/Mininet
+              testing and Wireshark packet evidence. The simulator shows packet movement and
+              real-time event logs, while the evidence screenshots show legitimate DHCP offer
+              behaviour and rogue DHCP offer behaviour captured during the practical lab.
+            </p>
+
+            <div class="home-badge-row">
+              <span class="home-pill pill-dhcp">DHCP Discover</span>
+              <span class="home-pill pill-dhcp">DHCP Offer</span>
+              <span class="home-pill pill-dhcp">DHCP Request</span>
+              <span class="home-pill pill-dhcp">DHCP ACK</span>
+              <span class="home-pill pill-evidence">Rogue Offer</span>
+            </div>
+
+            <div class="home-cta-row">
+              <a href="#dhcp-simulator" class="home-cta primary-cta">Open DHCP Simulator</a>
+              <a href="#dhcp-evidence" class="home-cta">View Evidence</a>
+              <a href="#dhcp-recreate" class="home-cta">Recreate Lab</a>
+            </div>
+          </div>
+
+          <div class="panel dhcp-hero-image-card">
+            <img
+              src="assets/images/dhcp-hero-evidence.png"
+              alt="DHCP DORA normal flow and rogue DHCP attack evidence illustration"
+              class="dhcp-hero-image"
+            />
+            <p class="image-caption">
+              Figure DHCP-1. DHCP normal DORA behaviour and rogue DHCP attack behaviour, showing
+              legitimate lease allocation and malicious configuration delivery.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DHCP SUMMARY -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="dhcp-summary-grid">
+          <article class="panel dhcp-summary-card">
+            <h2>What DHCP Does</h2>
+            <p>
+              DHCP automates client network configuration. Instead of manually assigning IP
+              addresses and gateway settings to every host, a DHCP server leases configuration to
+              clients. In a normal network, this process reduces configuration errors and allows new
+              hosts to join the network quickly.
+            </p>
+          </article>
+
+          <article class="panel dhcp-summary-card">
+            <h2>Why DHCP Can Be Attacked</h2>
+            <p>
+              DHCP depends on client trust during the early configuration stage. A rogue DHCP server
+              can reply to a client before or alongside the legitimate server. If the client accepts
+              the rogue offer, the attacker may assign a malicious gateway, DNS server, or incorrect
+              network configuration.
+            </p>
+          </article>
+
+          <article class="panel dhcp-summary-card">
+            <h2>How This Page Proves It</h2>
+            <p>
+              The page demonstrates DHCP using animation, validation logic, packet logs, and
+              Wireshark evidence. Normal behaviour shows the Discover, Offer, Request, and ACK
+              sequence. Attack behaviour shows how a rogue responder competes with the legitimate
+              DHCP process.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPOLOGY -->
+    <section class="topology-section" id="dhcp-simulator">
+      <div class="container container-wide">
+        <div class="panel topology-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Interactive Simulator</p>
+              <h2>Enterprise Topology</h2>
+            </div>
+            <span class="protocol-badge protocol-badge-dhcp">DHCP</span>
+          </div>
+
+          <div class="topology-shell" id="topologyShell">
+            <img src="assets/images/topology-bg.png" alt="Topology background" class="topology-bg" />
+            <div id="packetLayer" class="packet-layer"></div>
+
+            <div class="topology-backbone">
+              <svg class="backbone-svg" viewBox="0 0 1000 340" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="470" y1="42" x2="360" y2="120" class="net-line" id="wan-r2" />
+                <line x1="530" y1="42" x2="650" y2="125" class="net-line" id="wan-r3" />
+                <line x1="370" y1="135" x2="630" y2="135" class="net-line" id="r2-r3" />
+                <line x1="330" y1="150" x2="270" y2="235" class="net-line" id="r2-r1" />
+                <line x1="675" y1="150" x2="735" y2="235" class="net-line" id="r3-r4" />
+                <line x1="360" y1="150" x2="720" y2="247" class="net-line soft-line" id="r2-r4" />
+                <line x1="650" y1="145" x2="280" y2="248" class="net-line soft-line" id="r3-r1" />
+              </svg>
+
+              <div class="backbone-node cloud-node">
+                <img src="assets/icons/wan-cloud.png" alt="ISP WAN Cloud" class="icon cloud-icon" />
+                <span class="node-chip" id="wan-cloud">ISP / WAN Cloud</span>
+              </div>
+
+              <div class="backbone-node r2-node">
+                <img src="assets/icons/router.png" alt="R2-WAN-A" class="icon router-icon" />
+                <span class="node-chip" id="r2-router">R2-WAN-A</span>
+              </div>
+
+              <div class="backbone-node r3-node">
+                <img src="assets/icons/router.png" alt="R3-WAN-B" class="icon router-icon" />
+                <span class="node-chip" id="r3-router">R3-WAN-B</span>
+              </div>
+
+              <div class="backbone-node r1-node">
+                <img src="assets/icons/router.png" alt="R1-HQ" class="icon router-icon" />
+                <span class="node-chip" id="r1-router">R1-HQ</span>
+              </div>
+
+              <div class="backbone-node r4-node">
+                <img src="assets/icons/router.png" alt="R4-BR" class="icon router-icon" />
+                <span class="node-chip" id="r4-router">R4-BR</span>
+              </div>
+            </div>
+
+            <svg class="branch-svg" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
+              <line x1="245" y1="230" x2="145" y2="350" class="net-line branch-line" id="r1-sw1" />
+              <line x1="270" y1="230" x2="365" y2="350" class="net-line branch-line" id="r1-sw2" />
+              <line x1="735" y1="230" x2="638" y2="355" class="net-line branch-line" id="r4-sw1" />
+              <line x1="750" y1="230" x2="855" y2="355" class="net-line branch-line" id="r4-sw2" />
+
+              <line x1="255" y1="230" x2="252" y2="520" class="net-line branch-line" id="r1-dhcphq" />
+              <line x1="745" y1="230" x2="747" y2="525" class="net-line branch-line" id="r4-dhcpbr" />
+            </svg>
+
+            <div class="branches-grid">
+              <section class="branch-card">
+                <h3 class="branch-title">HQ LAN</h3>
+
+                <div class="switch-grid">
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="hq1-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="hq1-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="hq1-pc1" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="hq1-pc2" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="hq1-att1" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-HQ-1" class="icon switch-icon" />
+                        <span class="node-chip">SW-HQ-1</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC1" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC1</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC2" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC2</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="HQ-ATT-1" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-ATT-1</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="hq2-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="hq2-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="hq2-pc3" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="hq2-pc4" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="hq2-att2" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-HQ-2" class="icon switch-icon" />
+                        <span class="node-chip">SW-HQ-2</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC3" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC3</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC4" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC4</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="HQ-ATT-2" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-ATT-2</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="service-grid service-grid-3">
+                  <div class="service-item">
+                    <img src="assets/icons/dhcp-server.png" alt="DHCP-HQ" class="icon server-icon" />
+                    <span class="node-chip">DNS-CENTRAL</span>
+                  </div>
+                  <div class="service-item">
+                    <img src="assets/icons/dns-server.png" alt="DNS-CENTRAL" class="icon server-icon" />
+                    <span class="node-chip">DHCP-HQ</span>
+                  </div>
+                  <div class="service-item">
+                    <img src="assets/icons/app-server.png" alt="APP-HQ" class="icon server-icon" />
+                    <span class="node-chip">APP-HQ</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="branch-card">
+                <h3 class="branch-title">BR LAN</h3>
+
+                <div class="switch-grid">
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="br1-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="br1-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="br1-pc1" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="br1-pc2" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="br1-att1" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-BR-1" class="icon switch-icon" />
+                        <span class="node-chip">SW-BR-1</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC1" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC1</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC2" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC2</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="BR-ATT-1" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-ATT-1</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="br2-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="br2-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="br2-pc3" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="br2-pc4" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="br2-att2" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-BR-2" class="icon switch-icon" />
+                        <span class="node-chip">SW-BR-2</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC3" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC3</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC4" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC4</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="BR-ATT-2" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-ATT-2</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="service-grid service-grid-1">
+                  <div class="service-item">
+                    <img src="assets/icons/dhcp-server.png" alt="DHCP-BR" class="icon server-icon" />
+                    <span class="node-chip">DHCP-BR</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <p class="topology-note">
+            DHCP clients request an IP lease from the DHCP server in the same branch. This page
+            demonstrates the normal DORA exchange and rogue DHCP attack behaviour where a malicious
+            responder competes with the legitimate DHCP server.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROLS -->
+    <section class="control-section">
+      <div class="container container-wide">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Run Tests</p>
+              <h2>Simulation Controls</h2>
+            </div>
+          </div>
+
+          <div class="demo-block">
+            <h3 class="subsection-title">Predefined Demonstration</h3>
+            <p class="demo-note">
+              The predefined normal demo shows the BR DHCP DORA flow. The predefined attack demo
+              shows rogue DHCP behaviour in the HQ network, where an attacker competes with the
+              legitimate DHCP server.
+            </p>
+
+            <div class="demo-controls">
+              <button id="predefinedNormalBtn" class="action-btn btn-normal btn-animated">
+                Run Predefined Normal Demo
+              </button>
+              <button id="predefinedAttackBtn" class="action-btn btn-attack btn-animated">
+                Run Predefined Attack Demo
+              </button>
+            </div>
+          </div>
+
+          <div class="manual-block">
+            <h3 class="subsection-title">Manual DHCP Test</h3>
+            <p class="demo-note">
+              Enter a client IP and DHCP server IP. The validation logic checks whether the client
+              is paired with the correct DHCP server for its branch before enabling the manual tests.
+            </p>
+
+            <div class="control-grid">
+              <input id="sourceIp" type="text" class="control-input" placeholder="Client IP, e.g. 192.168.20.101" />
+              <input id="destinationIp" type="text" class="control-input" placeholder="DHCP server IP, e.g. 192.168.20.10" />
+              <button id="validatePairBtn" class="action-btn btn-control btn-animated">Validate Pair</button>
+
+              <button id="manualNormalBtn" class="action-btn btn-normal btn-animated" disabled>
+                Manual Normal Test
+              </button>
+              <button id="manualAttackBtn" class="action-btn btn-attack btn-animated" disabled>
+                Manual Attack Test
+              </button>
+              <button id="resetSimulationBtn" class="action-btn btn-control btn-animated">Reset</button>
+            </div>
+          </div>
+
+          <div id="validationStatus" class="validation-status">
+            Enter client and DHCP server IPs, then click <strong>Validate Pair</strong>.
+          </div>
+
+          <div class="dhcp-test-table-wrap">
+            <h3 class="subsection-title">Manual Input Examples</h3>
+
+            <p class="demo-note">
+              Use these examples to test valid DHCP paths, wrong-branch paths, invalid source types,
+              and unsupported or unmapped manual input. The examples below are shown in device-name
+              format first, followed by the IP address reference table that must be typed into the input boxes.
+            </p>
+
+            <div class="dhcp-test-grid">
+              <div class="dhcp-test-card valid-test">
+                <h4>Valid HQ DHCP Tests</h4>
+                <p>HQ-PC1 → DHCP-HQ</p>
+                <p>HQ-PC2 → DHCP-HQ</p>
+                <p>HQ-PC3 → DHCP-HQ</p>
+                <p>HQ-PC4 → DHCP-HQ</p>
+                <p class="test-note">Expected result: normal and attack buttons become available.</p>
+              </div>
+
+              <div class="dhcp-test-card valid-test">
+                <h4>Valid BR DHCP Tests</h4>
+                <p>BR-PC1 → DHCP-BR</p>
+                <p>BR-PC2 → DHCP-BR</p>
+                <p>BR-PC3 → DHCP-BR</p>
+                <p>BR-PC4 → DHCP-BR</p>
+                <p class="test-note">Expected result: normal and attack buttons become available.</p>
+              </div>
+
+              <div class="dhcp-test-card invalid-test">
+                <h4>Invalid Wrong-Branch Tests</h4>
+                <p>HQ-PC1 → DHCP-BR</p>
+                <p>HQ-PC2 → DHCP-BR</p>
+                <p>BR-PC1 → DHCP-HQ</p>
+                <p>BR-PC2 → DHCP-HQ</p>
+                <p class="test-note">Expected result: manual buttons remain disabled.</p>
+              </div>
+
+              <div class="dhcp-test-card invalid-test">
+                <h4>Invalid Source Tests</h4>
+                <p>DHCP-HQ → HQ-PC1</p>
+                <p>DHCP-BR → BR-PC1</p>
+                <p>DHCP-HQ → DHCP-BR</p>
+                <p>DHCP-BR → DHCP-HQ</p>
+                <p class="test-note">Expected result: source is rejected because the source must be a client PC.</p>
+              </div>
+
+              <div class="dhcp-test-card invalid-test">
+                <h4>Invalid Same-Device / Unknown Input</h4>
+                <p>HQ-PC1 → HQ-PC1</p>
+                <p>BR-PC1 → BR-PC1</p>
+                <p>HQ-PC1 → Unknown IP</p>
+                <p>Unknown IP → DHCP-HQ</p>
+                <p class="test-note">Expected result: validation warning appears and tests stay disabled.</p>
+              </div>
+
+              <div class="dhcp-test-card normal-only-test">
+                <h4>Example Presentation Flow</h4>
+                <p>Start with BR-PC1 → DHCP-BR.</p>
+                <p>Then test HQ-PC1 → DHCP-HQ.</p>
+                <p>Then show HQ-PC1 → DHCP-BR as invalid.</p>
+                <p>Finally show DHCP-HQ → HQ-PC1 as invalid source.</p>
+                <p class="test-note">This gives a clear normal, valid attack, and invalid-path demonstration.</p>
+              </div>
+            </div>
+
+            <div class="dhcp-ip-reference-wrap">
+              <h3 class="subsection-title">DHCP Manual Input IP Reference</h3>
+
+              <div class="dhcp-ip-reference-grid">
+                <div class="dhcp-ip-card">
+                  <h4>HQ Client PCs</h4>
+                  <p><strong>HQ-PC1:</strong> 192.168.10.101</p>
+                  <p><strong>HQ-PC2:</strong> 192.168.10.102</p>
+                  <p><strong>HQ-PC3:</strong> 192.168.10.103</p>
+                  <p><strong>HQ-PC4:</strong> 192.168.10.104</p>
+                </div>
+
+                <div class="dhcp-ip-card">
+                  <h4>BR Client PCs</h4>
+                  <p><strong>BR-PC1:</strong> 192.168.20.101</p>
+                  <p><strong>BR-PC2:</strong> 192.168.20.102</p>
+                  <p><strong>BR-PC3:</strong> 192.168.20.103</p>
+                  <p><strong>BR-PC4:</strong> 192.168.20.104</p>
+                </div>
+
+                <div class="dhcp-ip-card">
+                  <h4>DHCP Servers</h4>
+                  <p><strong>DHCP-HQ:</strong> 192.168.10.10</p>
+                  <p><strong>DHCP-BR:</strong> 192.168.20.10</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- OUTPUT -->
+    <section class="output-section">
+      <div class="container container-wide">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Live Event Log</p>
+              <h2>Real-Time Packet Output</h2>
+            </div>
+          </div>
+
+          <div class="panel-body packet-log-panel">
+            <div id="packetOutput" class="packet-output">
+              <p class="log-line neutral-log">[System] Waiting for validation and simulation input...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW TO USE -->
+    <section class="instruction-section">
+      <div class="container container-wide">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">User Guide</p>
+              <h2>How to Use This Simulation</h2>
+            </div>
+          </div>
+
+          <ol class="instruction-list">
+            <li>Use the predefined buttons to watch a guided DHCP packet sequence with synchronised output logs.</li>
+            <li>Or enter a client IP and DHCP server IP from the supported enterprise topology.</li>
+            <li>Click <strong>Validate Pair</strong> to check whether the DHCP simulation is valid.</li>
+            <li>If the client and DHCP server belong to the same branch, the normal and attack buttons become available.</li>
+            <li>If the client is paired with the wrong branch DHCP server, the buttons stay disabled.</li>
+            <li>Run the simulation and monitor both the topology animation and real-time output log.</li>
+            <li>Use <strong>Reset</strong> to stop the current animation and prepare the page for another test.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- DHCP EXPLANATION -->
+    <section class="explanation-section">
+      <div class="container container-wide">
+        <div class="section-heading-block">
+          <p class="eyebrow-text">Protocol Understanding</p>
+          <h2 class="section-title">Normal DHCP DORA vs Rogue DHCP Behaviour</h2>
+          <p class="section-intro">
+            DHCP is useful because it automates network configuration, but it becomes risky when a
+            rogue DHCP responder is present. The difference between a trusted server and a rogue
+            server is important because clients may accept network settings before they can
+            independently verify whether the responder is legitimate.
+          </p>
+        </div>
+
+        <div class="dhcp-explanation-grid">
+          <article class="panel dhcp-explanation-card">
+            <h3>Normal DHCP DORA Sequence</h3>
+            <p>
+              In normal DHCP behaviour, the client starts without a valid IP address and broadcasts
+              a DHCP Discover message. The legitimate DHCP server responds with an Offer. The client
+              sends a Request to accept the proposed configuration, and the server completes the
+              process with an ACK. This gives the client a valid IP address and supporting network
+              settings.
+            </p>
+          </article>
+
+          <article class="panel dhcp-explanation-card">
+            <h3>Rogue DHCP Attack Sequence</h3>
+            <p>
+              In rogue DHCP behaviour, an attacker operates an unauthorised DHCP service. When the
+              client broadcasts a Discover message, the rogue server can send a competing Offer. If
+              the client accepts the rogue configuration, it may receive a malicious gateway, DNS
+              server, or incorrect IP settings that redirect traffic or disrupt normal communication.
+            </p>
+          </article>
+
+          <article class="panel dhcp-explanation-card">
+            <h3>Normal vs Attack Difference</h3>
+            <p>
+              The key difference is trust. In the normal path, the client receives configuration from
+              the correct branch DHCP server. In the attack path, the attacker competes with the
+              legitimate server and attempts to control the client’s network configuration before
+              normal communication begins.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WIRESHARK EVIDENCE -->
+    <section class="home-section" id="dhcp-evidence">
+      <div class="container container-wide">
+        <div class="section-heading-block">
+          <p class="eyebrow-text">Packet-Level Proof</p>
+          <h2 class="section-title">Wireshark Evidence from DHCP Practical Lab</h2>
+          <p class="section-intro">
+            The DHCP practical was reproduced in Ubuntu using MiniEdit/Mininet and inspected in
+            Wireshark. The screenshots below show normal DHCP offer evidence and rogue DHCP offer
+            evidence, which supports the simulator’s normal and attack demonstrations.
+          </p>
+        </div>
+
+        <div class="dhcp-evidence-grid">
+          <article class="panel dhcp-evidence-card">
+            <img
+              src="assets/images/dhcp-legitimate-offer-evidence.png"
+              alt="Wireshark legitimate DHCP offer evidence"
+              class="dhcp-evidence-image"
+            />
+            <h3>Legitimate DHCP Offer Evidence</h3>
+            <p>
+              This capture shows the legitimate DHCP server responding to a client lease request.
+              The packet details show DHCP offer information, including the proposed client IP
+              address and configuration supplied by the authorised DHCP service.
+            </p>
+          </article>
+
+          <article class="panel dhcp-evidence-card">
+            <img
+              src="assets/images/dhcp-rogue-offer-evidence.png"
+              alt="Wireshark rogue DHCP offer evidence"
+              class="dhcp-evidence-image"
+            />
+            <h3>Rogue DHCP Offer Evidence</h3>
+            <p>
+              This capture shows an unauthorised or rogue DHCP response competing with the
+              legitimate DHCP process. The key risk is that a client may accept malicious network
+              settings if the rogue offer is accepted before the trusted configuration.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY ANALYSIS -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="dhcp-analysis-grid">
+          <article class="panel">
+            <p class="eyebrow-text">Security Analysis</p>
+            <h2>What the Attack Shows</h2>
+            <p>
+              The rogue DHCP scenario shows that host configuration can be attacked before the user
+              begins normal network activity. If the attacker controls DHCP settings, the victim can
+              be directed to a malicious gateway, given a hostile DNS server, or placed into a
+              misconfigured network state. This makes DHCP abuse especially dangerous in local
+              networks where clients trust the first usable configuration they receive.
+            </p>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow-text">Defensive Thinking</p>
+            <h2>How Rogue DHCP Risk Can Be Reduced</h2>
+            <p>
+              Practical mitigations include DHCP snooping, switch port security, trusted uplink
+              configuration, network access control, VLAN segmentation, static addressing for
+              critical infrastructure, and monitoring for unexpected DHCP offers. Wireshark filters
+              such as <strong>bootp</strong> or <strong>dhcp</strong> can help identify competing
+              DHCP servers during investigation.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECREATE LAB -->
+    <section class="home-section" id="dhcp-recreate">
+      <div class="container container-wide">
+        <div class="panel recreate-panel dhcp-recreate-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Reproduction Package</p>
+              <h2>Recreate the DHCP Practical on Another Local System</h2>
+            </div>
+
+            <div class="home-cta-row">
+              <a
+                href="YOUR_DHCP_DRIVE_LINK_HERE"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="home-cta"
+              >
+                Open DHCP Google Drive Folder
+              </a>
+
+              <a
+                href="assets/docs/dhcp-practical-recreation-instruction-manual.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="home-cta primary-cta"
+              >
+                Open DHCP Instruction Manual PDF
+              </a>
+            </div>
+          </div>
+
+          <p>
+            The DHCP reproduction package should contain the DHCP packet capture files, the OVA file,
+            and the instruction manual required to recreate the practical environment. The instruction
+            manual PDF provides the full step-by-step process from importing the Ubuntu OVA into
+            VirtualBox through to running MiniEdit/Mininet, capturing DHCP traffic in Wireshark,
+            executing normal DHCP DORA testing, running rogue DHCP testing, saving evidence, and
+            comparing the practical output with the website simulation.
+          </p>
+
+          <div class="recreate-step-grid">
+            <article class="recreate-step-card">
+              <span class="step-number dhcp-step-number">1</span>
+              <h3>Download Artefacts</h3>
+              <p>
+                Open the DHCP Google Drive folder and download the OVA file, DHCP PCAP files, and the
+                instruction manual. Keep all files together in one local project folder so the VM,
+                packet captures, screenshots, and recreation steps remain organised.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dhcp-step-number">2</span>
+              <h3>Read the Instruction Manual</h3>
+              <p>
+                Open <strong>dhcp-practical-recreation-instruction-manual.pdf</strong> before starting
+                the practical. Follow the manual in order because it explains the required software,
+                OVA import process, topology setup, Wireshark filters, normal DHCP DORA commands, and
+                rogue DHCP testing commands.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dhcp-step-number">3</span>
+              <h3>Import the Ubuntu OVA</h3>
+              <p>
+                In Oracle VirtualBox, choose <strong>File → Import Appliance</strong>, select the DHCP
+                OVA file, and complete the import. After import, start the Ubuntu VM and confirm that
+                the desktop, terminal, MiniEdit/Mininet, and Wireshark are available.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dhcp-step-number">4</span>
+              <h3>Run the Normal DHCP Test</h3>
+              <p>
+                Use MiniEdit/Mininet to start the DHCP topology. Start the legitimate DHCP service,
+                release any old client lease, request a new DHCP lease from the client, and capture
+                the Discover, Offer, Request, and ACK sequence in Wireshark using filters such as
+                <strong>bootp</strong> or <strong>dhcp</strong>.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dhcp-step-number">5</span>
+              <h3>Run the Rogue DHCP Test</h3>
+              <p>
+                Follow the attack section in the manual to start a rogue DHCP responder from the
+                attacker host. Capture the competing DHCP offer in Wireshark and compare the server
+                identifier, offered IP address, router option, and DNS option against the legitimate
+                DHCP response.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dhcp-step-number">6</span>
+              <h3>Compare with Website</h3>
+              <p>
+                Return to this DHCP page and run the predefined normal and attack simulations. Compare
+                the website packet animation and event logs with the Wireshark DHCP evidence so the
+                website, practical lab, and packet captures are clearly connected.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <p>Chris Rogen Irwin Roland | SIT716 Computer Networks and Security</p>
+      <p>DHCP Page | DORA Simulation, Rogue DHCP Evidence, and Reproduction Guide</p>
+    </div>
+  </footer>
+
+  <script src="dhcp.js"></script>
+</body>
+</html>

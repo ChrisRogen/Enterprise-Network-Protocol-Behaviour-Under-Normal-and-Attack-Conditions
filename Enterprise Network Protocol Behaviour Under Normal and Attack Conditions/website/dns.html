@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNS Simulation | Interactive Enterprise Network Protocol Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-page="dns">
+  <header class="site-header">
+    <div class="container header-content">
+      <div class="branding">
+        <h1>DNS Protocol Simulation</h1>
+        <p>
+          Visualising DNS name resolution, legitimate DNS query-response behaviour,
+          rogue DNS response attacks, Wireshark evidence, and practical reproduction guidance
+          for the SIT716 HD Plus project.
+        </p>
+      </div>
+      <div class="header-badge">Protocol Page</div>
+    </div>
+  </header>
+
+  <nav class="site-nav">
+    <div class="container nav-content">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="arp.html" class="nav-link nav-arp">ARP</a>
+      <a href="dhcp.html" class="nav-link nav-dhcp">DHCP</a>
+      <a href="dns.html" class="nav-link nav-dns active">DNS</a>
+      <a href="index.html#ospf-future-work" class="nav-link nav-ospf">OSPF Future Work</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- DNS HERO -->
+    <section class="protocol-hero-section dns-landing-section">
+      <div class="container container-wide">
+        <div class="dns-hero-grid">
+          <div class="panel dns-hero-content">
+            <p class="eyebrow-text">DNS Resolution + Rogue DNS + Wireshark Evidence</p>
+            <h2>Domain Name Resolution Under Normal and Rogue Response Conditions</h2>
+
+            <p class="hero-lead">
+              Domain Name System is used to translate human-readable domain names into IP addresses.
+              This DNS page demonstrates how a client sends a query to a legitimate DNS server and
+              receives a trusted response. It also demonstrates how a rogue DNS responder can return
+              a forged answer that redirects the client to an incorrect or malicious destination.
+            </p>
+
+            <p>
+              The DNS page connects the interactive website simulation with Ubuntu MiniEdit/Mininet
+              practical testing and Wireshark packet evidence. The simulator shows packet movement,
+              validation messages, and event logs, while the evidence section shows legitimate DNS
+              query behaviour, legitimate DNS response behaviour, and rogue DNS query-response
+              behaviour captured during the practical lab.
+            </p>
+
+            <div class="home-badge-row">
+              <span class="home-pill pill-dns">DNS Query</span>
+              <span class="home-pill pill-dns">DNS Response</span>
+              <span class="home-pill pill-evidence">Rogue DNS</span>
+              <span class="home-pill pill-evidence">Forged Response</span>
+              <span class="home-pill pill-evidence">Traffic Redirection</span>
+            </div>
+
+            <div class="home-cta-row">
+              <a href="#dns-simulator" class="home-cta primary-cta">Open DNS Simulator</a>
+              <a href="#dns-evidence" class="home-cta">View Evidence</a>
+              <a href="#dns-recreate" class="home-cta">Recreate Lab</a>
+            </div>
+          </div>
+
+          <div class="panel dns-hero-image-card">
+            <img
+              src="assets/images/dns-hero-evidence.png"
+              alt="DNS normal resolution and rogue DNS spoofing evidence illustration"
+              class="dns-hero-image"
+            />
+            <p class="image-caption">
+              Figure DNS-1. DNS normal query-response behaviour and rogue DNS response behaviour,
+              showing legitimate resolution and forged redirection.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DNS SUMMARY -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="dns-summary-grid">
+          <article class="panel dns-summary-card">
+            <h2>What DNS Does</h2>
+            <p>
+              DNS resolves domain names into IP addresses so users and applications can access
+              services without remembering numeric addresses. In normal behaviour, a client sends a
+              query to a trusted DNS server, and the DNS server replies with the correct IP address
+              for the requested domain.
+            </p>
+          </article>
+
+          <article class="panel dns-summary-card">
+            <h2>Why DNS Can Be Attacked</h2>
+            <p>
+              DNS can be abused when a rogue responder provides a forged answer before or instead of
+              the legitimate DNS response. If the client accepts the forged answer, it may connect to
+              an attacker-controlled IP address. This can support phishing, redirection, traffic
+              interception, or malware delivery.
+            </p>
+          </article>
+
+          <article class="panel dns-summary-card">
+            <h2>How This Page Proves It</h2>
+            <p>
+              The page demonstrates DNS using visual packet animation, validation logic, event logs,
+              and Wireshark evidence. Normal behaviour shows a client query and legitimate server
+              response. Attack behaviour shows the client being influenced by a rogue DNS response
+              that returns a fake destination address.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPOLOGY -->
+    <section class="topology-section" id="dns-simulator">
+      <div class="container container-wide">
+        <div class="panel topology-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Interactive Simulator</p>
+              <h2>Enterprise Topology</h2>
+            </div>
+            <span class="protocol-badge protocol-badge-dns">DNS</span>
+          </div>
+
+          <div class="topology-shell" id="topologyShell">
+            <img src="assets/images/topology-bg.png" alt="Topology background" class="topology-bg" />
+            <div id="packetLayer" class="packet-layer"></div>
+
+            <div class="topology-backbone">
+              <svg class="backbone-svg" viewBox="0 0 1000 340" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="470" y1="42" x2="360" y2="120" class="net-line" id="wan-r2" />
+                <line x1="530" y1="42" x2="650" y2="125" class="net-line" id="wan-r3" />
+                <line x1="370" y1="135" x2="630" y2="135" class="net-line" id="r2-r3" />
+                <line x1="330" y1="150" x2="270" y2="235" class="net-line" id="r2-r1" />
+                <line x1="675" y1="150" x2="735" y2="235" class="net-line" id="r3-r4" />
+                <line x1="360" y1="150" x2="720" y2="247" class="net-line soft-line" id="r2-r4" />
+                <line x1="650" y1="145" x2="280" y2="248" class="net-line soft-line" id="r3-r1" />
+              </svg>
+
+              <div class="backbone-node cloud-node">
+                <img src="assets/icons/wan-cloud.png" alt="ISP WAN Cloud" class="icon cloud-icon" />
+                <span class="node-chip" id="wan-cloud">ISP / WAN Cloud</span>
+              </div>
+
+              <div class="backbone-node r2-node">
+                <img src="assets/icons/router.png" alt="R2-WAN-A" class="icon router-icon" />
+                <span class="node-chip" id="r2-router">R2-WAN-A</span>
+              </div>
+
+              <div class="backbone-node r3-node">
+                <img src="assets/icons/router.png" alt="R3-WAN-B" class="icon router-icon" />
+                <span class="node-chip" id="r3-router">R3-WAN-B</span>
+              </div>
+
+              <div class="backbone-node r1-node">
+                <img src="assets/icons/router.png" alt="R1-HQ" class="icon router-icon" />
+                <span class="node-chip" id="r1-router">R1-HQ</span>
+              </div>
+
+              <div class="backbone-node r4-node">
+                <img src="assets/icons/router.png" alt="R4-BR" class="icon router-icon" />
+                <span class="node-chip" id="r4-router">R4-BR</span>
+              </div>
+            </div>
+
+            <svg class="branch-svg" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
+              <line x1="245" y1="230" x2="145" y2="355" class="net-line branch-line" id="r1-sw1" />
+              <line x1="270" y1="230" x2="365" y2="355" class="net-line branch-line" id="r1-sw2" />
+              <line x1="735" y1="230" x2="640" y2="355" class="net-line branch-line" id="r4-sw1" />
+              <line x1="750" y1="230" x2="855" y2="355" class="net-line branch-line" id="r4-sw2" />
+
+              <line x1="255" y1="230" x2="252" y2="520" class="net-line branch-line" id="r1-dnshq" />
+              <line x1="745" y1="230" x2="747" y2="520" class="net-line branch-line" id="r4-dnsbr" />
+            </svg>
+
+            <div class="branches-grid">
+              <section class="branch-card">
+                <h3 class="branch-title">HQ LAN</h3>
+
+                <div class="switch-grid">
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="hq1-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="hq1-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="hq1-pc1" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="hq1-pc2" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="hq1-att1" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-HQ-1" class="icon switch-icon" />
+                        <span class="node-chip">SW-HQ-1</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC1" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC1</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC2" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC2</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="HQ-ATT-1" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-ATT-1</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="hq2-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="hq2-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="hq2-pc3" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="hq2-pc4" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="hq2-att2" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-HQ-2" class="icon switch-icon" />
+                        <span class="node-chip">SW-HQ-2</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC3" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC3</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="HQ-PC4" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-PC4</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="HQ-ATT-2" class="icon endpoint-icon" />
+                          <span class="node-chip">HQ-ATT-2</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="service-grid service-grid-3">
+                  <div class="service-item">
+                    <img src="assets/icons/dhcp-server.png" alt="DHCP-HQ" class="icon server-icon" />
+                    <span class="node-chip">DHCP-HQ</span>
+                  </div>
+                  <div class="service-item">
+                    <img src="assets/icons/dns-server.png" alt="DNS-CENTRAL" class="icon server-icon" />
+                    <span class="node-chip">DNS-CENTRAL</span>
+                  </div>
+                  <div class="service-item">
+                    <img src="assets/icons/app-server.png" alt="APP-HQ" class="icon server-icon" />
+                    <span class="node-chip">APP-HQ</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="branch-card">
+                <h3 class="branch-title">BR LAN</h3>
+
+                <div class="switch-grid">
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="br1-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="br1-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="br1-pc1" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="br1-pc2" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="br1-att1" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-BR-1" class="icon switch-icon" />
+                        <span class="node-chip">SW-BR-1</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC1" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC1</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC2" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC2</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="BR-ATT-1" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-ATT-1</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="switch-card">
+                    <div class="switch-card-layout">
+                      <svg class="switch-svg" viewBox="0 0 300 210" preserveAspectRatio="none" aria-hidden="true">
+                        <line x1="150" y1="58" x2="150" y2="88" class="net-line local-line" id="br2-up" />
+                        <line x1="45" y1="88" x2="255" y2="88" class="net-line local-line" id="br2-bus" />
+                        <line x1="45" y1="88" x2="45" y2="124" class="net-line local-line" id="br2-pc3" />
+                        <line x1="150" y1="88" x2="150" y2="124" class="net-line local-line" id="br2-pc4" />
+                        <line x1="255" y1="88" x2="255" y2="124" class="net-line local-line" id="br2-att2" />
+                      </svg>
+
+                      <div class="switch-head">
+                        <img src="assets/icons/switch.png" alt="SW-BR-2" class="icon switch-icon" />
+                        <span class="node-chip">SW-BR-2</span>
+                      </div>
+
+                      <div class="endpoint-grid endpoint-grid-3">
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC3" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC3</span>
+                        </div>
+                        <div class="endpoint-item">
+                          <img src="assets/icons/pc.png" alt="BR-PC4" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-PC4</span>
+                        </div>
+                        <div class="endpoint-item attacker-item">
+                          <img src="assets/icons/attacker-pc.png" alt="BR-ATT-2" class="icon endpoint-icon" />
+                          <span class="node-chip">BR-ATT-2</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="service-grid service-grid-1">
+                  <div class="service-item">
+                    <img src="assets/icons/dns-server.png" alt="DNS-BR" class="icon server-icon" />
+                    <span class="node-chip">DNS-BR</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <p class="topology-note">
+            DNS clients query the DNS server in the same branch. This page demonstrates normal DNS
+            resolution and rogue DNS response behaviour, where an attacker provides a forged answer
+            that can redirect the client to an incorrect destination.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROLS -->
+    <section class="control-section">
+      <div class="container container-wide">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Run Tests</p>
+              <h2>Simulation Controls</h2>
+            </div>
+          </div>
+
+          <div class="demo-block">
+            <h3 class="subsection-title">Predefined Demonstration</h3>
+            <p class="demo-note">
+              The predefined normal demo shows HQ DNS resolution through DNS-CENTRAL. The predefined
+              attack demo shows rogue DNS behaviour, where a malicious responder returns a forged
+              IP address to redirect the client.
+            </p>
+
+            <div class="demo-controls">
+              <button id="predefinedNormalBtn" class="action-btn btn-normal btn-animated">
+                Run Predefined Normal Demo
+              </button>
+              <button id="predefinedAttackBtn" class="action-btn btn-attack btn-animated">
+                Run Predefined Attack Demo
+              </button>
+            </div>
+          </div>
+
+          <div class="manual-block">
+            <h3 class="subsection-title">Manual DNS Test</h3>
+            <p class="demo-note">
+              Enter a client IP and DNS server IP. The validation logic checks whether the client is
+              paired with the correct DNS server for its branch before enabling the manual tests.
+            </p>
+
+            <div class="control-grid">
+              <input id="sourceIp" type="text" class="control-input" placeholder="Client IP, e.g. 192.168.10.101" />
+              <input id="destinationIp" type="text" class="control-input" placeholder="DNS server IP, e.g. 192.168.10.53" />
+              <button id="validatePairBtn" class="action-btn btn-control btn-animated">Validate Pair</button>
+
+              <button id="manualNormalBtn" class="action-btn btn-normal btn-animated" disabled>
+                Manual Normal Test
+              </button>
+              <button id="manualAttackBtn" class="action-btn btn-attack btn-animated" disabled>
+                Manual Attack Test
+              </button>
+              <button id="resetSimulationBtn" class="action-btn btn-control btn-animated">Reset</button>
+            </div>
+          </div>
+
+          <div id="validationStatus" class="validation-status">
+            Enter source/client IP and DNS server IP, then click <strong>Validate Pair</strong>.
+          </div>
+
+          <div class="dns-test-table-wrap">
+            <h3 class="subsection-title">Manual Input Examples</h3>
+
+            <p class="demo-note">
+              Use these examples to test valid DNS paths, wrong-branch paths, invalid source types,
+              and unsupported or unmapped manual input. The examples below are shown in device-name
+              format first, followed by the IP address reference table that must be typed into the input boxes.
+            </p>
+
+            <div class="dns-test-grid">
+              <div class="dns-test-card valid-test">
+                <h4>Valid HQ DNS Tests</h4>
+                <p>HQ-PC1 → DNS-CENTRAL</p>
+                <p>HQ-PC2 → DNS-CENTRAL</p>
+                <p>HQ-PC3 → DNS-CENTRAL</p>
+                <p>HQ-PC4 → DNS-CENTRAL</p>
+                <p class="test-note">Expected result: normal and attack buttons become available.</p>
+              </div>
+
+              <div class="dns-test-card valid-test">
+                <h4>Valid BR DNS Tests</h4>
+                <p>BR-PC1 → DNS-BR</p>
+                <p>BR-PC2 → DNS-BR</p>
+                <p>BR-PC3 → DNS-BR</p>
+                <p>BR-PC4 → DNS-BR</p>
+                <p class="test-note">Expected result: normal and attack buttons become available.</p>
+              </div>
+
+              <div class="dns-test-card invalid-test">
+                <h4>Invalid Wrong-Branch Tests</h4>
+                <p>HQ-PC1 → DNS-BR</p>
+                <p>HQ-PC2 → DNS-BR</p>
+                <p>BR-PC1 → DNS-CENTRAL</p>
+                <p>BR-PC2 → DNS-CENTRAL</p>
+                <p class="test-note">Expected result: manual buttons remain disabled.</p>
+              </div>
+
+              <div class="dns-test-card invalid-test">
+                <h4>Invalid Source Tests</h4>
+                <p>DNS-CENTRAL → HQ-PC1</p>
+                <p>DNS-BR → BR-PC1</p>
+                <p>DNS-CENTRAL → DNS-BR</p>
+                <p>DNS-BR → DNS-CENTRAL</p>
+                <p class="test-note">Expected result: source is rejected because the source must be a client PC.</p>
+              </div>
+
+              <div class="dns-test-card invalid-test">
+                <h4>Invalid Same-Device / Unknown Input</h4>
+                <p>HQ-PC1 → HQ-PC1</p>
+                <p>BR-PC1 → BR-PC1</p>
+                <p>HQ-PC1 → Unknown IP</p>
+                <p>Unknown IP → DNS-CENTRAL</p>
+                <p class="test-note">Expected result: validation warning appears and tests stay disabled.</p>
+              </div>
+
+              <div class="dns-test-card normal-only-test">
+                <h4>Example Presentation Flow</h4>
+                <p>Start with HQ-PC1 → DNS-CENTRAL.</p>
+                <p>Then test BR-PC1 → DNS-BR.</p>
+                <p>Then show HQ-PC1 → DNS-BR as invalid.</p>
+                <p>Finally show DNS-CENTRAL → HQ-PC1 as invalid source.</p>
+                <p class="test-note">This gives a clear normal, valid attack, and invalid-path demonstration.</p>
+              </div>
+            </div>
+
+            <div class="dns-ip-reference-wrap">
+              <h3 class="subsection-title">DNS Manual Input IP Reference</h3>
+
+              <div class="dns-ip-reference-grid">
+                <div class="dns-ip-card">
+                  <h4>HQ Client PCs</h4>
+                  <p><strong>HQ-PC1:</strong> 192.168.10.101</p>
+                  <p><strong>HQ-PC2:</strong> 192.168.10.102</p>
+                  <p><strong>HQ-PC3:</strong> 192.168.10.103</p>
+                  <p><strong>HQ-PC4:</strong> 192.168.10.104</p>
+                </div>
+
+                <div class="dns-ip-card">
+                  <h4>BR Client PCs</h4>
+                  <p><strong>BR-PC1:</strong> 192.168.20.101</p>
+                  <p><strong>BR-PC2:</strong> 192.168.20.102</p>
+                  <p><strong>BR-PC3:</strong> 192.168.20.103</p>
+                  <p><strong>BR-PC4:</strong> 192.168.20.104</p>
+                </div>
+
+                <div class="dns-ip-card">
+                  <h4>DNS Servers</h4>
+                  <p><strong>DNS-CENTRAL:</strong> 192.168.10.53</p>
+                  <p><strong>DNS-BR:</strong> 192.168.20.53</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- OUTPUT -->
+    <section class="output-section">
+      <div class="container container-wide">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Live Event Log</p>
+              <h2>Real-Time Packet Output</h2>
+            </div>
+          </div>
+
+          <div class="panel-body packet-log-panel">
+            <div id="packetOutput" class="packet-output">
+              <p class="log-line neutral-log">[System] Waiting for validation and simulation input...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW TO USE -->
+    <section class="instruction-section">
+      <div class="container container-wide">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">User Guide</p>
+              <h2>How to Use This Simulation</h2>
+            </div>
+          </div>
+
+          <ol class="instruction-list">
+            <li>Use the predefined buttons to watch a guided DNS packet sequence with synchronised output logs.</li>
+            <li>Or enter a client IP and DNS server IP from the supported enterprise topology.</li>
+            <li>Click <strong>Validate Pair</strong> to check whether the DNS simulation is valid.</li>
+            <li>If the client and DNS server belong to the same branch, the normal and attack buttons become available.</li>
+            <li>If the client is paired with the wrong branch DNS server, the buttons stay disabled.</li>
+            <li>Run the simulation and monitor both the topology animation and real-time output log.</li>
+            <li>Use <strong>Reset</strong> to stop the current animation and prepare the page for another test.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- DNS EXPLANATION -->
+    <section class="explanation-section">
+      <div class="container container-wide">
+        <div class="section-heading-block">
+          <p class="eyebrow-text">Protocol Understanding</p>
+          <h2 class="section-title">Normal DNS Resolution vs Rogue DNS Behaviour</h2>
+          <p class="section-intro">
+            DNS is essential for translating domain names into IP addresses, but the trust placed in
+            DNS answers can be abused. A forged DNS response can redirect a user away from the
+            legitimate destination and toward an attacker-controlled service.
+          </p>
+        </div>
+
+        <div class="dns-explanation-grid">
+          <article class="panel dns-explanation-card">
+            <h3>Normal DNS Resolution</h3>
+            <p>
+              In normal DNS behaviour, a client sends a DNS query asking for the IP address of a
+              domain. The legitimate DNS server responds with the correct IP address. The client can
+              then connect to the real destination using the resolved address.
+            </p>
+          </article>
+
+          <article class="panel dns-explanation-card">
+            <h3>Rogue DNS Response</h3>
+            <p>
+              In rogue DNS behaviour, an attacker provides a forged DNS answer. If the client accepts
+              the forged response, the requested domain can resolve to an attacker-controlled IP
+              address instead of the legitimate service.
+            </p>
+          </article>
+
+          <article class="panel dns-explanation-card">
+            <h3>Normal vs Attack Difference</h3>
+            <p>
+              The key difference is answer integrity. In the normal path, the DNS response comes from
+              the expected resolver and points to the correct destination. In the attack path, the
+              response points to a false address, which can support phishing, redirection, or traffic
+              interception.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WIRESHARK EVIDENCE -->
+    <section class="home-section" id="dns-evidence">
+      <div class="container container-wide">
+        <div class="section-heading-block">
+          <p class="eyebrow-text">Packet-Level Proof</p>
+          <h2 class="section-title">Wireshark Evidence from DNS Practical Lab</h2>
+          <p class="section-intro">
+            The DNS practical was reproduced in Ubuntu using MiniEdit/Mininet and inspected in
+            Wireshark. The screenshots below show legitimate DNS query evidence, legitimate DNS
+            response evidence, and rogue or abnormal DNS query-response evidence.
+          </p>
+        </div>
+
+        <div class="dns-evidence-grid">
+          <article class="panel dns-evidence-card">
+            <img
+              src="assets/images/dns-legitimate-query-evidence.png"
+              alt="Wireshark legitimate DNS query evidence"
+              class="dns-evidence-image"
+            />
+            <h3>Legitimate DNS Query Evidence</h3>
+            <p>
+              This capture shows the client sending a standard DNS query to the DNS server. The
+              packet details confirm that the client is requesting name resolution through the
+              expected DNS communication path.
+            </p>
+          </article>
+
+          <article class="panel dns-evidence-card">
+            <img
+              src="assets/images/dns-legitimate-response-evidence.png"
+              alt="Wireshark legitimate DNS response evidence"
+              class="dns-evidence-image"
+            />
+            <h3>Legitimate DNS Response Evidence</h3>
+            <p>
+              This capture shows the DNS server returning a normal response to the client. The
+              response confirms the query-response relationship and demonstrates expected DNS
+              behaviour under normal operation.
+            </p>
+          </article>
+
+          <article class="panel dns-evidence-card dns-evidence-wide">
+            <img
+              src="assets/images/dns-rogue-query-response-evidence.png"
+              alt="Wireshark rogue DNS query and response evidence"
+              class="dns-evidence-image"
+            />
+            <h3>Rogue DNS Query-Response Evidence</h3>
+            <p>
+              This capture shows abnormal DNS behaviour where the client receives or interacts with
+              DNS traffic outside the trusted resolution path. This supports the attack simulation,
+              where a rogue DNS response can provide a forged destination address and redirect the
+              client away from the legitimate service.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY ANALYSIS -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="dns-analysis-grid">
+          <article class="panel">
+            <p class="eyebrow-text">Security Analysis</p>
+            <h2>What the Attack Shows</h2>
+            <p>
+              The rogue DNS scenario shows that name resolution can become a redirection point for
+              attackers. If a client accepts a forged DNS answer, the user may believe they are
+              visiting a legitimate service while actually connecting to an attacker-controlled
+              destination. This makes DNS abuse relevant to phishing, credential theft, malware
+              delivery, and traffic interception.
+            </p>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow-text">Defensive Thinking</p>
+            <h2>How Rogue DNS Risk Can Be Reduced</h2>
+            <p>
+              Practical mitigations include using trusted DNS resolvers, DNSSEC where supported,
+              endpoint protection, network segmentation, DHCP snooping to prevent malicious DNS
+              server assignment, monitoring for unexpected DNS servers, and Wireshark investigation
+              using filters such as <strong>dns</strong> or <strong>udp.port == 53</strong>.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECREATE LAB -->
+    <section class="home-section" id="dns-recreate">
+      <div class="container container-wide">
+        <div class="panel recreate-panel dns-recreate-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Reproduction Package</p>
+              <h2>Recreate the DNS Practical on Another Local System</h2>
+            </div>
+
+            <div class="home-cta-row">
+              <a
+                href="YOUR_DNS_DRIVE_LINK_HERE"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="home-cta"
+              >
+                Open DNS Google Drive Folder
+              </a>
+
+              <a
+                href="assets/docs/dns-practical-recreation-instruction-manual.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="home-cta primary-cta"
+              >
+                Open DNS Instruction Manual PDF
+              </a>
+            </div>
+          </div>
+
+          <p>
+            The DNS reproduction package should contain the DNS packet capture files, the OVA file,
+            and the instruction manual required to recreate the practical environment. The instruction
+            manual PDF provides the full step-by-step process from importing the Ubuntu OVA into
+            VirtualBox through to running MiniEdit/Mininet, capturing DNS traffic in Wireshark,
+            executing normal DNS query-response testing, running rogue DNS response testing, saving
+            evidence, and comparing the practical output with the website simulation.
+          </p>
+
+          <div class="recreate-step-grid">
+            <article class="recreate-step-card">
+              <span class="step-number dns-step-number">1</span>
+              <h3>Download Artefacts</h3>
+              <p>
+                Open the DNS Google Drive folder and download the OVA file, DNS PCAP files, and the
+                instruction manual. Keep all files together in one local project folder so the VM,
+                packet captures, screenshots, and recreation steps remain organised.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dns-step-number">2</span>
+              <h3>Read the Instruction Manual</h3>
+              <p>
+                Open <strong>dns-practical-recreation-instruction-manual.pdf</strong> before starting
+                the practical. Follow the manual in order because it explains the required software,
+                OVA import process, topology setup, Wireshark filters, normal DNS commands, and rogue
+                DNS testing commands.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dns-step-number">3</span>
+              <h3>Import the Ubuntu OVA</h3>
+              <p>
+                In Oracle VirtualBox, choose <strong>File → Import Appliance</strong>, select the DNS
+                OVA file, and complete the import. After import, start the Ubuntu VM and confirm that
+                the desktop, terminal, MiniEdit/Mininet, and Wireshark are available.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dns-step-number">4</span>
+              <h3>Run the Normal DNS Test</h3>
+              <p>
+                Use MiniEdit/Mininet to start the DNS topology. Start the legitimate DNS service,
+                send a DNS query from the client to the trusted DNS server, and capture the normal
+                query-response exchange in Wireshark using filters such as <strong>dns</strong> or
+                <strong>udp.port == 53</strong>.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dns-step-number">5</span>
+              <h3>Run the Rogue DNS Test</h3>
+              <p>
+                Follow the attack section in the manual to start a rogue DNS responder from the
+                attacker host. Capture the forged DNS response in Wireshark and compare the returned
+                IP address against the legitimate DNS response.
+              </p>
+            </article>
+
+            <article class="recreate-step-card">
+              <span class="step-number dns-step-number">6</span>
+              <h3>Compare with Website</h3>
+              <p>
+                Return to this DNS page and run the predefined normal and attack simulations. Compare
+                the website packet animation and event logs with the Wireshark DNS evidence so the
+                website, practical lab, and packet captures are clearly connected.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <p>Chris Rogen Irwin Roland | SIT716 Computer Networks and Security</p>
+      <p>DNS Page | Name Resolution Simulation, Rogue DNS Evidence, and Reproduction Guide</p>
+    </div>
+  </footer>
+
+  <script src="dns.js"></script>
+</body>
+</html>

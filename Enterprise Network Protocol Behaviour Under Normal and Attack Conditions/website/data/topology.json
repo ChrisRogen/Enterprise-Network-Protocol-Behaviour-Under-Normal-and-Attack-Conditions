@@ -1,0 +1,142 @@
+{
+  "protocolPages": {
+    "arp": {
+      "protocolName": "ARP",
+      "allowedAttackType": "arp_spoofing"
+    }
+  },
+  "devices": [
+    {
+      "id": "r1-hq",
+      "name": "R1-HQ",
+      "role": "router",
+      "lan": "HQ",
+      "ip": "192.168.10.1",
+      "subnet": "192.168.10.0/24",
+      "isGateway": true
+    },
+    {
+      "id": "r4-br",
+      "name": "R4-BR",
+      "role": "router",
+      "lan": "BR",
+      "ip": "192.168.20.1",
+      "subnet": "192.168.20.0/24",
+      "isGateway": true
+    },
+
+    {
+      "id": "hq-pc1",
+      "name": "HQ-PC1",
+      "role": "pc",
+      "lan": "HQ",
+      "ip": "192.168.10.101",
+      "subnet": "192.168.10.0/24"
+    },
+    {
+      "id": "hq-pc2",
+      "name": "HQ-PC2",
+      "role": "pc",
+      "lan": "HQ",
+      "ip": "192.168.10.102",
+      "subnet": "192.168.10.0/24"
+    },
+    {
+      "id": "hq-pc3",
+      "name": "HQ-PC3",
+      "role": "pc",
+      "lan": "HQ",
+      "ip": "192.168.10.103",
+      "subnet": "192.168.10.0/24"
+    },
+    {
+      "id": "hq-prn",
+      "name": "HQ-PRN",
+      "role": "printer",
+      "lan": "HQ",
+      "ip": "192.168.10.20",
+      "subnet": "192.168.10.0/24"
+    },
+    {
+      "id": "hq-att",
+      "name": "HQ-ATT",
+      "role": "attacker",
+      "lan": "HQ",
+      "ip": "192.168.10.50",
+      "subnet": "192.168.10.0/24"
+    },
+    {
+      "id": "dhcp-hq",
+      "name": "DHCP-HQ",
+      "role": "dhcp",
+      "lan": "HQ",
+      "ip": "192.168.10.2",
+      "subnet": "192.168.10.0/24"
+    },
+    {
+      "id": "dns-central",
+      "name": "DNS-CENTRAL",
+      "role": "dns",
+      "lan": "HQ",
+      "ip": "192.168.10.3",
+      "subnet": "192.168.10.0/24"
+    },
+    {
+      "id": "app-hq",
+      "name": "APP-HQ",
+      "role": "app",
+      "lan": "HQ",
+      "ip": "192.168.10.4",
+      "subnet": "192.168.10.0/24"
+    },
+
+    {
+      "id": "br-pc1",
+      "name": "BR-PC1",
+      "role": "pc",
+      "lan": "BR",
+      "ip": "192.168.20.101",
+      "subnet": "192.168.20.0/24"
+    },
+    {
+      "id": "br-pc2",
+      "name": "BR-PC2",
+      "role": "pc",
+      "lan": "BR",
+      "ip": "192.168.20.102",
+      "subnet": "192.168.20.0/24"
+    },
+    {
+      "id": "br-pc3",
+      "name": "BR-PC3",
+      "role": "pc",
+      "lan": "BR",
+      "ip": "192.168.20.103",
+      "subnet": "192.168.20.0/24"
+    },
+    {
+      "id": "br-prn",
+      "name": "BR-PRN",
+      "role": "printer",
+      "lan": "BR",
+      "ip": "192.168.20.20",
+      "subnet": "192.168.20.0/24"
+    },
+    {
+      "id": "br-att",
+      "name": "BR-ATT",
+      "role": "attacker",
+      "lan": "BR",
+      "ip": "192.168.20.50",
+      "subnet": "192.168.20.0/24"
+    },
+    {
+      "id": "dhcp-br",
+      "name": "DHCP-BR",
+      "role": "dhcp",
+      "lan": "BR",
+      "ip": "192.168.20.2",
+      "subnet": "192.168.20.0/24"
+    }
+  ]
+}

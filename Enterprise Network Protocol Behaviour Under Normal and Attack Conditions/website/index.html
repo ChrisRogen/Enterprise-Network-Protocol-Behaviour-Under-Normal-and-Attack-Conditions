@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Enterprise Network Protocol Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-page="home">
+  <header class="site-header">
+    <div class="container header-content">
+      <div class="branding">
+        <h1>Interactive Enterprise Network Protocol Simulator</h1>
+        <p>
+          A SIT716 HD Plus project demonstrating ARP, DHCP, and DNS behaviour through
+          interactive website simulation, Ubuntu MiniEdit/Mininet practical testing, and
+          Wireshark packet-level validation.
+        </p>
+      </div>
+
+      <div class="header-badge">SIT716 HD Plus Project</div>
+    </div>
+  </header>
+
+  <nav class="site-nav">
+    <div class="container nav-content">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="arp.html" class="nav-link nav-arp">ARP</a>
+      <a href="dhcp.html" class="nav-link nav-dhcp">DHCP</a>
+      <a href="dns.html" class="nav-link nav-dns">DNS</a>
+      <a href="#ospf-future-work" class="nav-link nav-ospf">OSPF Future Work</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="home-hero-section">
+      <div class="container container-wide">
+        <div class="home-hero-grid">
+          <div class="home-hero-content panel">
+            <p class="eyebrow-text">Website Simulation + Ubuntu Lab + Wireshark Evidence</p>
+
+            <h2>Enterprise Network Protocol Behaviour Under Normal and Attack Conditions</h2>
+
+            <p class="hero-lead">
+              This project demonstrates how key enterprise network protocols behave when they
+              operate correctly and how the same protocols can be abused during cybersecurity
+              attacks. The core focus is ARP, DHCP, and DNS because these protocols are essential
+              for local network communication, automatic host configuration, and name resolution,
+              but they can also be targeted through spoofing, rogue service responses, and traffic
+              redirection.
+            </p>
+
+            <p>
+              The website provides an interactive learning layer where packet movement, validation
+              messages, and real-time output logs are shown visually. The practical layer was
+              completed in Ubuntu using MiniEdit/Mininet, and the evidence layer was captured using
+              Wireshark. Together, these components show that the project is not only a visual
+              animation, but also a technically validated cybersecurity demonstration.
+            </p>
+
+            <div class="home-badge-row">
+              <span class="home-pill pill-arp">ARP Spoofing</span>
+              <span class="home-pill pill-dhcp">DHCP DORA + Rogue DHCP</span>
+              <span class="home-pill pill-dns">DNS Query + Rogue DNS</span>
+              <span class="home-pill pill-evidence">Packet Evidence</span>
+            </div>
+
+            <div class="home-cta-row">
+              <a href="arp.html" class="home-cta primary-cta">Start ARP Simulation</a>
+              <a href="dhcp.html" class="home-cta">Open DHCP</a>
+              <a href="dns.html" class="home-cta">Open DNS</a>
+            </div>
+          </div>
+
+          <div class="home-hero-image-card panel">
+            <img
+              src="assets/images/home-hero-network.png"
+              alt="Dark cyber enterprise network simulator illustration showing ARP, DHCP, DNS, normal traffic, attack traffic, branch LANs, routers, switches, servers, and attackers"
+              class="home-hero-image"
+            />
+            <p class="image-caption">
+              Figure 1. Enterprise simulator concept showing normal and attack traffic paths for
+              ARP, DHCP, and DNS across a two-branch network.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECT MISSION -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="panel home-text-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Project Purpose</p>
+              <h2>Project Mission</h2>
+            </div>
+          </div>
+
+          <p>
+            The purpose of this project is to make network protocol behaviour easier to understand
+            by combining visual packet animation with real technical validation. Instead of only
+            describing ARP, DHCP, and DNS in theory, the website shows how packets move across an
+            enterprise-style topology and how the same behaviours can be proven through Ubuntu-based
+            practical testing. This supports deeper cybersecurity learning because the project does
+            not only show that a protocol works; it also shows how attackers can misuse normal
+            protocol trust relationships and how abnormal behaviour can be identified from packet
+            evidence.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVIDENCE VALIDATION SECTION -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="home-evidence-grid">
+          <div class="panel home-evidence-content">
+            <p class="eyebrow-text">Technical Validation</p>
+            <h2>Simulation Backed by Real Packet Evidence</h2>
+
+            <p>
+              Each completed protocol area is designed around two layers of evidence. The first
+              layer is the website simulation, where users can trigger predefined and manual normal
+              or attack scenarios and observe packet movement, validation messages, and real-time
+              output logs. The second layer is the Ubuntu MiniEdit/Mininet practical environment,
+              where normal and attack behaviour was reproduced and captured using Wireshark.
+            </p>
+
+            <p>
+              This connection between simulation and packet capture strengthens the project because
+              the visual explanation is supported by real protocol behaviour rather than being only
+              a decorative animation. The final demonstration can therefore explain the website
+              simulation, the Ubuntu lab setup, and the Wireshark packet evidence as one connected
+              workflow.
+            </p>
+
+            <div class="evidence-card-grid">
+              <article class="mini-evidence-card">
+                <h3>Website Simulator</h3>
+                <p>
+                  The website provides the interactive learning layer. It allows users to run
+                  normal and attack demonstrations, enter manual source and destination values,
+                  and receive validation feedback when a path is valid, invalid, or unsupported.
+                </p>
+              </article>
+
+              <article class="mini-evidence-card">
+                <h3>Ubuntu Practical Lab</h3>
+                <p>
+                  The Ubuntu MiniEdit/Mininet lab provides the practical testing layer. Client,
+                  server, gateway, and attacker roles were used to reproduce the protocol behaviour
+                  in a controlled network environment.
+                </p>
+              </article>
+
+              <article class="mini-evidence-card">
+                <h3>Wireshark Evidence</h3>
+                <p>
+                  Wireshark provides the packet-level verification layer. Packet captures confirm
+                  ARP requests and forged replies, DHCP DORA and rogue offers, and legitimate
+                  versus rogue DNS responses.
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="panel home-evidence-image-card">
+            <img
+              src="assets/images/evidence-validation-flow.png"
+              alt="Cybersecurity workflow from website simulation to Ubuntu MiniEdit lab to Wireshark packet capture evidence"
+              class="home-evidence-image"
+            />
+            <p class="image-caption">
+              Figure 2. Validation workflow showing how the website simulation is supported by
+              Ubuntu practical testing and Wireshark packet capture evidence.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPLETED PROTOCOLS -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="section-heading-block">
+          <p class="eyebrow-text">Completed Core Scope</p>
+          <h2 class="section-title">Implemented Protocol Simulations</h2>
+          <p class="section-intro">
+            ARP, DHCP, and DNS are the completed core protocol areas in this project. Each protocol
+            page includes a visual topology, predefined normal behaviour, predefined attack
+            behaviour, manual input validation, real-time packet output, and reset functionality
+            for repeated demonstration.
+          </p>
+        </div>
+
+        <div class="home-protocol-grid">
+          <article class="home-protocol-card home-arp-card">
+            <div class="protocol-card-top">
+              <span class="protocol-icon-dot arp-dot">ARP</span>
+              <span class="status-chip status-complete">Completed</span>
+            </div>
+
+            <h3>ARP: Address Resolution and Spoofing</h3>
+
+            <p>
+              The ARP simulation demonstrates how a host resolves an IP address into a MAC address
+              inside a local network. In normal behaviour, a client sends an ARP request and
+              receives a legitimate ARP reply from the correct destination or gateway. In attack
+              behaviour, a malicious host sends forged ARP replies so the victim stores an
+              incorrect IP-to-MAC mapping. This allows traffic to be redirected through the
+              attacker, demonstrating how ARP spoofing can support man-in-the-middle activity.
+            </p>
+
+            <a href="arp.html" class="protocol-open-btn">Open ARP Page</a>
+          </article>
+
+          <article class="home-protocol-card home-dhcp-card">
+            <div class="protocol-card-top">
+              <span class="protocol-icon-dot dhcp-dot">DHCP</span>
+              <span class="status-chip status-complete">Completed</span>
+            </div>
+
+            <h3>DHCP: Lease Allocation and Rogue DHCP</h3>
+
+            <p>
+              The DHCP simulation demonstrates the normal DORA process: Discover, Offer, Request,
+              and Ack. In normal behaviour, a client requests network configuration and receives a
+              valid IP address, gateway, DNS server, and lease information from the correct branch
+              DHCP server. In attack behaviour, a rogue DHCP responder competes with the legitimate
+              server and can provide malicious or incorrect configuration, such as a hostile
+              gateway or DNS server.
+            </p>
+
+            <a href="dhcp.html" class="protocol-open-btn">Open DHCP Page</a>
+          </article>
+
+          <article class="home-protocol-card home-dns-card">
+            <div class="protocol-card-top">
+              <span class="protocol-icon-dot dns-dot">DNS</span>
+              <span class="status-chip status-complete">Completed</span>
+            </div>
+
+            <h3>DNS: Name Resolution and Rogue Response</h3>
+
+            <p>
+              The DNS simulation demonstrates how a client resolves a domain name into an IP
+              address by querying a DNS server. In normal behaviour, the legitimate DNS server
+              returns the correct address for the requested domain. In attack behaviour, a rogue DNS
+              responder provides a forged answer that redirects the client to an attacker-controlled
+              or malicious destination.
+            </p>
+
+            <a href="dns.html" class="protocol-open-btn">Open DNS Page</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- OSPF FUTURE WORK -->
+    <section class="home-section" id="ospf-future-work">
+      <div class="container container-wide">
+        <article class="panel ospf-future-panel">
+          <div class="protocol-card-top">
+            <span class="protocol-icon-dot ospf-dot">OSPF</span>
+            <span class="status-chip status-future">Future Work</span>
+          </div>
+
+          <h2>OSPF: Planned Future Extension</h2>
+
+          <p>
+            OSPF is included as a planned extension rather than a completed core protocol in this
+            project version. The intended future implementation would demonstrate neighbour
+            formation, route advertisement, best path selection, link failure response, and possible
+            abnormal routing behaviour. For the final submitted scope, the project focuses on ARP,
+            DHCP, and DNS because these three protocols have been implemented in the website and
+            supported with Ubuntu practical testing and Wireshark evidence.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- WHAT USERS CAN TEST -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="section-heading-block">
+          <p class="eyebrow-text">Interactive Testing</p>
+          <h2 class="section-title">What Users Can Test</h2>
+          <p class="section-intro">
+            The simulator allows users to test both guided and manual protocol scenarios. Predefined
+            demonstrations show complete normal or attack sequences without requiring user input,
+            while manual testing allows users to enter source and destination IP addresses and check
+            whether the selected path is technically valid.
+          </p>
+        </div>
+
+        <div class="test-feature-grid">
+          <article class="test-feature-card">
+            <h3>Normal Behaviour</h3>
+            <p>
+              Normal tests show how ARP, DHCP, and DNS are expected to work when devices and
+              services behave correctly. These simulations focus on valid protocol operation,
+              correct packet direction, and expected output messages.
+            </p>
+          </article>
+
+          <article class="test-feature-card">
+            <h3>Attack Behaviour</h3>
+            <p>
+              Attack tests show how trust weaknesses in local network protocols can be abused. ARP
+              spoofing redirects traffic through an attacker, rogue DHCP provides malicious
+              configuration, and rogue DNS returns a forged destination address.
+            </p>
+          </article>
+
+          <article class="test-feature-card">
+            <h3>Manual Validation</h3>
+            <p>
+              Manual validation prevents unrealistic testing by checking whether the entered source
+              and destination pair is valid for the selected protocol. Invalid IPs, wrong-branch
+              paths, unsupported attack paths, and incorrect source types are blocked.
+            </p>
+          </article>
+
+          <article class="test-feature-card">
+            <h3>Reset and Re-Test</h3>
+            <p>
+              The reset function stops the current animation, clears packet objects, removes line
+              highlights, resets output logs, re-enables inputs, and returns the page to a ready
+              state for the next test. This makes the simulator suitable for repeated live
+              demonstration.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ULO CONNECTION -->
+    <section class="home-section">
+      <div class="container container-wide">
+        <div class="panel home-text-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow-text">Assessment Alignment</p>
+              <h2>How This Project Demonstrates Advanced Learning</h2>
+            </div>
+          </div>
+
+          <p>
+            This project demonstrates advanced learning by connecting network architecture,
+            protocol behaviour, cybersecurity attack analysis, and evidence-based validation in one
+            practical artefact. The enterprise topology shows how devices, routers, switches,
+            clients, attackers, and services interact in a structured network. The protocol
+            simulations explain how normal packet flows differ from abnormal or malicious behaviour.
+            The Ubuntu and Wireshark evidence supports the analysis by showing that the demonstrated
+            behaviours can be reproduced and verified at packet level.
+          </p>
+
+          <p>
+            This makes the project more than a visual website because it connects design,
+            implementation, attack behaviour, and technical investigation. It directly supports the
+            final presentation by allowing the project to be explained through three connected
+            outputs: the website simulator, the Ubuntu practical demonstrations, and the packet
+            capture evidence.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CALL TO ACTION -->
+    <section class="home-section final-home-cta-section">
+      <div class="container container-wide">
+        <div class="panel final-home-cta">
+          <p class="eyebrow-text">Start Demonstration</p>
+          <h2>Start Exploring the Simulations</h2>
+
+          <p>
+            Use the protocol pages to explore how ARP, DHCP, and DNS behave in both normal and
+            attack scenarios. Start with the predefined demonstrations to understand the guided
+            packet flow, then use manual input testing to validate different source and destination
+            combinations. During the final demonstration, the website can be shown alongside Ubuntu
+            practical evidence and Wireshark captures to explain how the visual simulation maps to
+            real network behaviour.
+          </p>
+
+          <div class="home-cta-row center-cta-row">
+            <a href="arp.html" class="home-cta primary-cta">ARP Simulation</a>
+            <a href="dhcp.html" class="home-cta">DHCP Simulation</a>
+            <a href="dns.html" class="home-cta">DNS Simulation</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <p>Chris Rogen Irwin Roland | SIT716 Computer Networks and Security</p>
+      <p>HD Plus Project | ARP, DHCP, DNS Simulator with Ubuntu and Wireshark Evidence</p>
+    </div>
+  </footer>
+</body>
+</html>
